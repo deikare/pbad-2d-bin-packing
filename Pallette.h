@@ -41,11 +41,6 @@ private:
                              struct InsertionTrialResult &bestTrialResult,
                              std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);
 
-    static InsertionTrialResult
-    getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIterator,
-                            const std::_List_iterator<CounterPoint> &beg, const std::_List_iterator<CounterPoint> &end,
-                            unsigned long itemWidth, unsigned long itemHeight);
-
     void updateCounterPoints(const struct InsertionTrialResult &bestTrialResult, const ItemType &itemType);
 
     void updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);

@@ -61,55 +61,55 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
                                    const unsigned long itemWidth, const unsigned long itemHeight, double &bestRating,
                                    Pallette::InsertionTrialResult &bestTrialResult,
                                    std::_List_iterator<ItemTypeTuple> &bestItemTypeIter) {
-    auto tmpTrialResult = getInsertionTrialResult(cpIterator, beg, end, itemWidth, itemHeight);
-    auto rating = network.rateItem(tmpTrialResult.features);
-
-    if (rating > bestRating) {
-        bestTrialResult = tmpTrialResult;
-        bestRating = rating;
-        bestItemTypeIter = itemTypesIterator;
-    }
-}
-
-
-Pallette::InsertionTrialResult
-Pallette::getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIterator,
-                                  const std::_List_iterator<CounterPoint> &beg,
-                                  const std::_List_iterator<CounterPoint> &end,
-                                  const unsigned long itemWidth, const unsigned long itemHeight) {
-    InsertionTrialResult result;
+    std::pair<bool, bool> result = {true, true};
 
     unsigned long topBorder = cpIterator->second + itemHeight;
-    auto topLeftCP = cpIterator;
-    while (topLeftCP != beg) {
-        auto prev = std::prev(topLeftCP);
-        if (prev->second > topBorder) {
-            result.topLeftEqual = topLeftCP->second == topBorder;
-            break;
-        }
-
-        topLeftCP = prev;
-    }
-
     unsigned long rightBorder = cpIterator->first + itemWidth;
-    auto bottomRightCP = cpIterator;
-    while (true) {
-        auto next = std::next(topLeftCP);
-        if (next == end || next->first > rightBorder) {
-            result.bottomRightEqual = bottomRightCP->first == rightBorder;
-            break;
+
+    if (rightBorder > width)
+        result.first = false;
+    else if (topBorder > height)
+        result.second = false;
+    else {
+        InsertionTrialResult trialResult;
+
+        auto topLeftCP = cpIterator;
+        while (topLeftCP != beg) {
+            auto prev = std::prev(topLeftCP);
+            if (prev->second > topBorder) {
+                trialResult.topLeftEqual = topLeftCP->second == topBorder;
+                break;
+            }
+
+            topLeftCP = prev;
         }
 
-        bottomRightCP = next;
+        auto bottomRightCP = cpIterator;
+        while (true) {
+            auto next = std::next(topLeftCP);
+            if (next == end || next->first > rightBorder) {
+                trialResult.bottomRightEqual = bottomRightCP->first == rightBorder;
+                break;
+            }
+
+            bottomRightCP = next;
+        }
+
+        trialResult.bottomRightCp = bottomRightCP;
+        trialResult.topLeftCp = topLeftCP;
+
+        // TODO calculate features
+
+        auto rating = network.rateItem(trialResult.features);
+
+        if (rating > bestRating) {
+            bestTrialResult = trialResult;
+            bestRating = rating;
+            bestItemTypeIter = itemTypesIterator;
+        }
     }
-
-    result.bottomRightCp = bottomRightCP;
-    result.topLeftCp = topLeftCP;
-
-    // TODO calculate features
-
-    return result;
 }
+
 
 void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult, const ItemType &itemType) {
     auto bottomRightCp = bestTrialResult.bottomRightCp;
