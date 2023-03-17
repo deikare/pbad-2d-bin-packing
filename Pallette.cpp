@@ -39,9 +39,9 @@ double Pallette::performInsertionStep() {
     for (auto itemTypesIter = itemTypes.begin(); itemTypesIter != itemTypesEnd; itemTypesIter++) {
         auto cpEnd = cpList.end();
         for (auto cpIterator = cpList.begin(); cpIterator != cpEnd; cpIterator++) {
-            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, false, bestRating,
+            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.first, itemTypesIter->first.second, bestRating,
                                 bestTrialResult, bestItemTypeIter);
-            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, true, bestRating,
+            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.second, itemTypesIter->first.first, bestRating,
                                 bestTrialResult, bestItemTypeIter);
         }
     }
@@ -58,11 +58,10 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
                                    const std::_List_iterator<CounterPoint> &beg,
                                    const std::_List_iterator<CounterPoint> &end,
                                    const std::_List_iterator<ItemTypeTuple> &itemTypesIterator,
-                                   bool pivot, double &bestRating,
+                                   const unsigned long itemWidth, const unsigned long itemHeight, double &bestRating,
                                    Pallette::InsertionTrialResult &bestTrialResult,
                                    std::_List_iterator<ItemTypeTuple> &bestItemTypeIter) {
-    auto tmpTrialResult = getInsertionTrialResult(cpIterator, beg, end,
-                                                  itemTypesIterator->first, pivot);
+    auto tmpTrialResult = getInsertionTrialResult(cpIterator, beg, end, itemWidth, itemHeight);
     auto rating = network.rateItem(tmpTrialResult.features);
 
     if (rating > bestRating) {
@@ -77,12 +76,8 @@ Pallette::InsertionTrialResult
 Pallette::getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIterator,
                                   const std::_List_iterator<CounterPoint> &beg,
                                   const std::_List_iterator<CounterPoint> &end,
-                                  const ItemType &itemType, bool pivot) {
+                                  const unsigned long itemWidth, const unsigned long itemHeight) {
     InsertionTrialResult result;
-
-    unsigned long itemWidth;
-    unsigned long itemHeight;
-    initializeItemSize(itemWidth, itemHeight, pivot, itemType);
 
     unsigned long topBorder = cpIterator->second + itemHeight;
     auto topLeftCP = cpIterator;
@@ -110,7 +105,6 @@ Pallette::getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIte
 
     result.bottomRightCp = bottomRightCP;
     result.topLeftCp = topLeftCP;
-    result.pivot = pivot;
 
     // TODO calculate features
 
@@ -121,19 +115,15 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     auto bottomRightCp = bestTrialResult.bottomRightCp;
     auto topLeftCp = bestTrialResult.topLeftCp;
 
-    unsigned long itemWidth;
-    unsigned long itemHeight;
-    initializeItemSize(itemWidth, itemHeight, bestTrialResult.pivot, itemType);
-
     if (topLeftCp == bottomRightCp) {
-        cpList.emplace(bottomRightCp, topLeftCp->first, topLeftCp->second + itemHeight);
-        bottomRightCp->first += itemWidth;
+        cpList.emplace(bottomRightCp, topLeftCp->first, topLeftCp->second + bestTrialResult.itemHeight);
+        bottomRightCp->first += bestTrialResult.itemWidth;
     } else {
         if (!bestTrialResult.bottomRightEqual)
-            bottomRightCp->first += itemWidth;
+            bottomRightCp->first += bestTrialResult.itemWidth;
 
         if (!bestTrialResult.topLeftEqual)
-            topLeftCp->second += itemHeight;
+            topLeftCp->second += bestTrialResult.itemHeight;
 
         auto toRemove = std::next(topLeftCp);
         while (toRemove != bottomRightCp)
@@ -145,18 +135,6 @@ void Pallette::updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItem
     if (bestItemTypeIter->second == 1)
         itemTypes.erase(bestItemTypeIter);
     else (bestItemTypeIter->second)--;
-}
-
-
-void Pallette::initializeItemSize(unsigned long &itemWidth, unsigned long &itemHeight, bool pivot,
-                                  const ItemType &itemType) {
-    if (pivot) {
-        itemWidth = itemType.second;
-        itemHeight = itemType.first;
-    } else {
-        itemWidth = itemType.first;
-        itemHeight = itemType.second;
-    }
 }
 
 

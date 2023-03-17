@@ -30,24 +30,25 @@ private:
         Features features;
         bool topLeftEqual;
         bool bottomRightEqual;
-        bool pivot;
+        unsigned long itemWidth;
+        unsigned long itemHeight;
     };
 
     void tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIterator,
                              const std::_List_iterator<CounterPoint> &beg, const std::_List_iterator<CounterPoint> &end,
-                             const std::_List_iterator<ItemTypeTuple> &itemTypesIterator, bool pivot,
-                             double &bestRating,
-                             struct InsertionTrialResult & bestTrialResult,
+                             const std::_List_iterator<ItemTypeTuple> &itemTypesIterator, unsigned long itemWidth,
+                             unsigned long itemHeight, double &bestRating,
+                             struct InsertionTrialResult &bestTrialResult,
                              std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);
 
     static InsertionTrialResult
     getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIterator,
                             const std::_List_iterator<CounterPoint> &beg, const std::_List_iterator<CounterPoint> &end,
-                            const ItemType &itemType, bool pivot);
+                            unsigned long itemWidth, unsigned long itemHeight);
 
-    void updateCounterPoints(const struct InsertionTrialResult & bestTrialResult, const ItemType& itemType);
+    void updateCounterPoints(const struct InsertionTrialResult &bestTrialResult, const ItemType &itemType);
+
     void updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);
-    static void initializeItemSize(unsigned long & itemWidth, unsigned long & itemHeight, bool pivot, const ItemType& itemType);
 
 public:
     Pallette(unsigned long width, unsigned long height,
