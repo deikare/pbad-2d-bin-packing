@@ -19,6 +19,8 @@ double Pallette::performSimulation() {
 
     while (!itemTypes.empty()) { //TODO add check of bounds
         double result = performInsertionStep();
+        if (result < 0)
+            break;
         insertsNumber++;
         meanResult = (meanResult * (insertsNumber - 1) + result) / insertsNumber;
     }
@@ -27,11 +29,11 @@ double Pallette::performSimulation() {
 }
 
 double Pallette::performInsertionStep() {
-    double bestRating = 0.0;
+    double bestRating = -1;
 
-    struct InsertionTrialResult bestTrialResult = Pallette::InsertionTrialResult();
+    struct InsertionTrialResult bestTrialResult;
     auto cpBeg = cpList.begin();
-    auto bestItemTypeIter = itemTypes.begin();
+    std::_List_iterator <ItemTypeTuple> bestItemTypeIter;
 
     auto itemTypesEnd = itemTypes.end();
     for (auto itemTypesIter = itemTypes.begin(); itemTypesIter != itemTypesEnd; itemTypesIter++) {
@@ -44,8 +46,10 @@ double Pallette::performInsertionStep() {
         }
     }
 
-    updateCounterPoints(bestTrialResult, bestItemTypeIter->first);
-    updateItemList(bestItemTypeIter);
+    if (bestRating >= 0) {
+        updateCounterPoints(bestTrialResult, bestItemTypeIter->first);
+        updateItemList(bestItemTypeIter);
+    }
 
     return bestRating;
 }
