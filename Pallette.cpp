@@ -121,14 +121,16 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     unsigned long itemHeight;
     initializeItemSize(itemWidth, itemHeight, bestTrialResult.pivot, itemType);
 
-    if (!bestTrialResult.bottomRightEqual)
-        bottomRightCp->first += itemWidth;
-
-    if (topLeftCp == bottomRightCp)
+    if (topLeftCp == bottomRightCp) {
         cpList.emplace(bottomRightCp, topLeftCp->first, topLeftCp->second + itemHeight);
-    else {
+        bottomRightCp->first += itemWidth;
+    } else {
+        if (!bestTrialResult.bottomRightEqual)
+            bottomRightCp->first += itemWidth;
+
         if (!bestTrialResult.topLeftEqual)
             topLeftCp->second += itemHeight;
+
         auto toRemove = std::next(topLeftCp);
         while (toRemove != bottomRightCp)
             toRemove = cpList.erase(toRemove);
