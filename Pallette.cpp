@@ -17,7 +17,7 @@ double Pallette::performSimulation() {
     double meanResult = 0.0;
     unsigned long insertsNumber = 0;
 
-    while (!itemTypes.empty()) {
+    while (!itemTypes.empty() && !cpList.empty()) {
         double result = performInsertionStep();
         if (result < 0)
             break;
@@ -33,15 +33,17 @@ double Pallette::performInsertionStep() {
 
     struct InsertionTrialResult bestTrialResult;
     auto cpBeg = cpList.begin();
-    std::_List_iterator <ItemTypeTuple> bestItemTypeIter;
+    std::_List_iterator<ItemTypeTuple> bestItemTypeIter;
 
     auto itemTypesEnd = itemTypes.end();
     for (auto itemTypesIter = itemTypes.begin(); itemTypesIter != itemTypesEnd; itemTypesIter++) {
         auto cpEnd = cpList.end();
         for (auto cpIterator = cpList.begin(); cpIterator != cpEnd; cpIterator++) {
-            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.first, itemTypesIter->first.second, bestRating,
+            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.first,
+                                itemTypesIter->first.second, bestRating,
                                 bestTrialResult, bestItemTypeIter);
-            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.second, itemTypesIter->first.first, bestRating,
+            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.second,
+                                itemTypesIter->first.first, bestRating,
                                 bestTrialResult, bestItemTypeIter);
         }
     }
@@ -68,9 +70,10 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 
     if (rightBorder > width)
         result.first = false;
-    else if (topBorder > height)
+
+    if (topBorder > height)
         result.second = false;
-    else {
+    else if (result.first) {
         InsertionTrialResult trialResult;
 
         auto topLeftCP = cpIterator;
@@ -130,10 +133,10 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
             toRemove = cpList.erase(toRemove);
 
         if (bottomRightCp->first == width)
-            cpList.erase(bottomRightCp);
+            cpList.pop_back();
 
         if (topLeftCp->second == height)
-            cpList.erase(topLeftCp);
+            cpList.pop_front();
     }
 }
 
