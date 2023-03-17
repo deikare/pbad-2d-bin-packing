@@ -17,7 +17,7 @@ double Pallette::performSimulation() {
     double meanResult = 0.0;
     unsigned long insertsNumber = 0;
 
-    while (!itemTypes.empty()) { //TODO add check of bounds
+    while (!itemTypes.empty()) {
         double result = performInsertionStep();
         if (result < 0)
             break;
@@ -128,6 +128,12 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
         auto toRemove = std::next(topLeftCp);
         while (toRemove != bottomRightCp)
             toRemove = cpList.erase(toRemove);
+
+        if (bottomRightCp->first == width)
+            cpList.erase(bottomRightCp);
+
+        if (topLeftCp->second == height)
+            cpList.erase(topLeftCp);
     }
 }
 
