@@ -28,6 +28,8 @@ private:
         std::_List_iterator<CounterPoint> topLeftCp;
         std::_List_iterator<CounterPoint> bottomRightCp;
         Features features;
+        bool topLeftEqual;
+        bool bottomRightEqual;
         bool pivot;
     };
 

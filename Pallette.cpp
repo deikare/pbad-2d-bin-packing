@@ -84,8 +84,10 @@ Pallette::getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIte
     auto topLeftCP = cpIterator;
     while (topLeftCP != beg) {
         auto prev = std::prev(topLeftCP);
-        if (prev->second > topBorder)
+        if (prev->second > topBorder) {
+            result.topLeftEqual = topLeftCP->second == topBorder;
             break;
+        }
 
         topLeftCP = prev;
     }
@@ -94,8 +96,10 @@ Pallette::getInsertionTrialResult(const std::_List_iterator<CounterPoint> &cpIte
     auto bottomRightCP = cpIterator;
     while (true) {
         auto next = std::next(topLeftCP);
-        if (next == end || next->first > rightBorder)
+        if (next == end || next->first > rightBorder) {
+            result.bottomRightEqual = bottomRightCP->first == rightBorder;
             break;
+        }
 
         bottomRightCP = next;
     }
@@ -117,10 +121,14 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     unsigned long itemHeight;
     initializeItemSize(itemWidth, itemHeight, bestTrialResult.pivot, itemType);
 
+    if (!bestTrialResult.bottomRightEqual)
+        bottomRightCp->first += itemWidth;
+
     if (topLeftCp == bottomRightCp)
         cpList.emplace(bottomRightCp, topLeftCp->first, topLeftCp->second + itemHeight);
     else {
-        topLeftCp->second += itemHeight;
+        if (!bestTrialResult.topLeftEqual)
+            topLeftCp->second += itemHeight;
         auto toRemove = std::next(topLeftCp);
         while (toRemove != bottomRightCp)
             toRemove = cpList.erase(toRemove);
