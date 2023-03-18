@@ -49,7 +49,7 @@ double Pallette::performInsertionStep() {
     }
 
     if (bestRating >= 0) {
-        updateCounterPoints(bestTrialResult, bestItemTypeIter->first);
+        updateCounterPoints(bestTrialResult);
         updateItemList(bestItemTypeIter);
     }
 
@@ -115,7 +115,7 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 }
 
 
-void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult, const ItemType &itemType) {
+void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult) {
     auto bottomRightCp = bestTrialResult.bottomRightCp;
     auto topLeftCp = bestTrialResult.topLeftCp;
 

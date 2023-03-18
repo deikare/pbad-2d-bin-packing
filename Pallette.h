@@ -41,7 +41,7 @@ private:
                              struct InsertionTrialResult &bestTrialResult,
                              std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);
 
-    void updateCounterPoints(const struct InsertionTrialResult &bestTrialResult, const ItemType &itemType);
+    void updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult);
 
     void updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIter);
 
