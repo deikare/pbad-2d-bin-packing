@@ -124,10 +124,10 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
         bottomRightCp->first = bestTrialResult.rightBorder;
         topLeftCp = std::prev(topLeftCp);
     } else {
-        if (!bestTrialResult.bottomRightEqual)
+//        if (!bestTrialResult.bottomRightEqual)
             bottomRightCp->first = bestTrialResult.rightBorder;
 
-        if (!bestTrialResult.topLeftEqual)
+//        if (!bestTrialResult.topLeftEqual)
             topLeftCp->second = bestTrialResult.topBorder;
 
         cpList.erase(std::next(topLeftCp), bottomRightCp);
