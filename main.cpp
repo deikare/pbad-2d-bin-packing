@@ -14,7 +14,8 @@ std::string print_list(const std::list<int> &list) {
 }
 
 void
-make_delete(std::list<int> &list, std::_List_iterator<int> first, std::_List_iterator<int> last, const std::string& text) {
+make_delete(std::list<int> &list, std::_List_iterator<int> first, std::_List_iterator<int> last,
+            const std::string &text) {
     std::cout << "Pre " + text + ": " + print_list(list) << std::endl;
     list.erase(first, last);
     std::cout << "Post: " + print_list(list) << std::endl << std::endl;
@@ -31,7 +32,8 @@ std::list<ItemTypeTuple> createItems() {
             {{100, 100}, 1},
             {{20, 10}, 1},
             {{40, 5}, 1},
-            {{30, 5}, 1},
+            {{50, 3}, 1},
+            {{25, 8}, 1},
     };
     return result;
 }
