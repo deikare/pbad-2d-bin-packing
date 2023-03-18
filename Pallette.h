@@ -30,8 +30,8 @@ private:
         Features features;
         bool topLeftEqual;
         bool bottomRightEqual;
-        unsigned long itemWidth;
-        unsigned long itemHeight;
+        unsigned long rightBorder;
+        unsigned long topBorder;
     };
 
     void tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIterator,

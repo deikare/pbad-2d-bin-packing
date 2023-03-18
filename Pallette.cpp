@@ -42,9 +42,9 @@ double Pallette::performInsertionStep() {
             tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.first,
                                 itemTypesIter->first.second, bestRating,
                                 bestTrialResult, bestItemTypeIter);
-            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.second,
-                                itemTypesIter->first.first, bestRating,
-                                bestTrialResult, bestItemTypeIter);
+//            tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.second,
+//                                itemTypesIter->first.first, bestRating,
+//                                bestTrialResult, bestItemTypeIter);
         }
     }
 
@@ -79,27 +79,28 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
         auto topLeftCP = cpIterator;
         while (topLeftCP != beg) {
             auto prev = std::prev(topLeftCP);
-            if (prev->second > topBorder) {
-                trialResult.topLeftEqual = topLeftCP->second == topBorder;
+            if (prev->second > topBorder)
                 break;
-            }
 
             topLeftCP = prev;
         }
+        trialResult.topLeftEqual = topLeftCP->second == topBorder;
 
         auto bottomRightCP = cpIterator;
         while (true) {
-            auto next = std::next(topLeftCP);
-            if (next == end || next->first > rightBorder) {
-                trialResult.bottomRightEqual = bottomRightCP->first == rightBorder;
+            auto next = std::next(bottomRightCP);
+            if (next == end || next->first > rightBorder)
                 break;
-            }
 
             bottomRightCP = next;
         }
+        trialResult.bottomRightEqual = bottomRightCP->first == rightBorder;
+
 
         trialResult.bottomRightCp = bottomRightCP;
         trialResult.topLeftCp = topLeftCP;
+        trialResult.rightBorder = rightBorder;
+        trialResult.topBorder = topBorder;
 
         // TODO calculate features
 
@@ -119,25 +120,24 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     auto topLeftCp = bestTrialResult.topLeftCp;
 
     if (topLeftCp == bottomRightCp) {
-        cpList.emplace(bottomRightCp, topLeftCp->first, topLeftCp->second + bestTrialResult.itemHeight);
-        bottomRightCp->first += bestTrialResult.itemWidth;
+        cpList.emplace(bottomRightCp, topLeftCp->first, bestTrialResult.topBorder);
+        bottomRightCp->first = bestTrialResult.rightBorder;
+        topLeftCp = std::prev(topLeftCp);
     } else {
         if (!bestTrialResult.bottomRightEqual)
-            bottomRightCp->first += bestTrialResult.itemWidth;
+            bottomRightCp->first = bestTrialResult.rightBorder;
 
         if (!bestTrialResult.topLeftEqual)
-            topLeftCp->second += bestTrialResult.itemHeight;
+            topLeftCp->second = bestTrialResult.topBorder;
 
-        auto toRemove = std::next(topLeftCp);
-        while (toRemove != bottomRightCp)
-            toRemove = cpList.erase(toRemove);
-
-        if (bottomRightCp->first == width)
-            cpList.pop_back();
-
-        if (topLeftCp->second == height)
-            cpList.pop_front();
+        cpList.erase(std::next(topLeftCp), bottomRightCp);
     }
+
+    if (bottomRightCp->first == width)
+        cpList.pop_back();
+
+    if (topLeftCp->second == height)
+        cpList.pop_front();
 }
 
 void Pallette::updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIter) {
