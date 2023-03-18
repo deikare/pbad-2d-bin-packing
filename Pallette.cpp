@@ -38,7 +38,8 @@ double Pallette::performInsertionStep() {
     auto itemTypesEnd = itemTypes.end();
     for (auto itemTypesIter = itemTypes.begin(); itemTypesIter != itemTypesEnd; itemTypesIter++) {
         auto cpEnd = cpList.end();
-        for (auto cpIterator = cpList.begin(); cpIterator != cpEnd; cpIterator++) {
+        for (auto cpIterator = cpList.begin();
+             cpIterator != cpEnd; cpIterator++) { //TODO upgrade iterative search to bisection search
             tryInsertionForItem(cpIterator, cpBeg, cpEnd, itemTypesIter, itemTypesIter->first.first,
                                 itemTypesIter->first.second, bestRating,
                                 bestTrialResult, bestItemTypeIter);
@@ -84,7 +85,6 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 
             topLeftCP = prev;
         }
-        trialResult.topLeftEqual = topLeftCP->second == topBorder;
 
         auto bottomRightCP = cpIterator;
         while (true) {
@@ -94,7 +94,6 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 
             bottomRightCP = next;
         }
-        trialResult.bottomRightEqual = bottomRightCP->first == rightBorder;
 
 
         trialResult.bottomRightCp = bottomRightCP;
@@ -103,8 +102,8 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
         trialResult.topBorder = topBorder;
 
         // TODO calculate features
-
-        auto rating = network.rateItem(trialResult.features);
+        std::vector<double> features = {};
+        auto rating = network.rateItem(features);
 
         if (rating > bestRating) {
             bestTrialResult = trialResult;
@@ -117,18 +116,16 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 
 void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult) {
     auto bottomRightCp = bestTrialResult.bottomRightCp;
-    auto topLeftCp = bestTrialResult.topLeftCp;
+    auto topLeftCp = bestTrialResult.topLeftCp; //TODO think whether there is simpler approach
 
     if (topLeftCp == bottomRightCp) {
         cpList.emplace(bottomRightCp, topLeftCp->first, bestTrialResult.topBorder);
         bottomRightCp->first = bestTrialResult.rightBorder;
         topLeftCp = std::prev(topLeftCp);
     } else {
-//        if (!bestTrialResult.bottomRightEqual)
-            bottomRightCp->first = bestTrialResult.rightBorder;
+        bottomRightCp->first = bestTrialResult.rightBorder;
 
-//        if (!bestTrialResult.topLeftEqual)
-            topLeftCp->second = bestTrialResult.topBorder;
+        topLeftCp->second = bestTrialResult.topBorder;
 
         cpList.erase(std::next(topLeftCp), bottomRightCp);
     }

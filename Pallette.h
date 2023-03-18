@@ -27,11 +27,8 @@ private:
     struct InsertionTrialResult {
         std::_List_iterator<CounterPoint> topLeftCp;
         std::_List_iterator<CounterPoint> bottomRightCp;
-        Features features;
-        bool topLeftEqual;
-        bool bottomRightEqual;
-        unsigned long rightBorder;
-        unsigned long topBorder;
+        unsigned long rightBorder{};
+        unsigned long topBorder{};
     };
 
     void tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIterator,
