@@ -95,7 +95,6 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
             bottomRightCP = next;
         }
 
-
         trialResult.bottomRightCp = bottomRightCP;
         trialResult.topLeftCp = topLeftCP;
         trialResult.rightBorder = rightBorder;
@@ -118,24 +117,25 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     auto bottomRightCp = bestTrialResult.bottomRightCp;
     auto topLeftCp = bestTrialResult.topLeftCp; //TODO think whether there is simpler approach
 
+    auto topBorder = bestTrialResult.topBorder;
+    auto rightBorder = bestTrialResult.rightBorder;
+
     if (topLeftCp == bottomRightCp) {
-        counterPoints.emplace(bottomRightCp, topLeftCp->first, bestTrialResult.topBorder); //topleft == bottomright, so there is new topleft to add before bottomright
-        bottomRightCp->first = bestTrialResult.rightBorder;
-        topLeftCp = std::prev(topLeftCp); //modify old topleft, so removal at the end of function works properly
+        if (topBorder != height)
+            counterPoints.emplace(bottomRightCp, topLeftCp->first,
+                                  topBorder); //topleft == bottomright, so there is new topleft to add before bottomright
     } else {
-        bottomRightCp->first = bestTrialResult.rightBorder;
-
-        topLeftCp->second = bestTrialResult.topBorder;
-
         counterPoints.erase(std::next(topLeftCp),
                             bottomRightCp); //remove unnecessary counterpoints in range [topleft + 1, bottomright)
+        if (topBorder == height)
+            counterPoints.pop_front();
+        else topLeftCp->second = topBorder;
     }
 
-    if (bottomRightCp->first == width) //remove last or first cp if there are placed on right border or top border
+    //remove last cp if it's placed at right border
+    if (rightBorder == width)
         counterPoints.pop_back();
-
-    if (topLeftCp->second == height)
-        counterPoints.pop_front();
+    else bottomRightCp->first = rightBorder;
 }
 
 void Pallette::updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIterator) {
