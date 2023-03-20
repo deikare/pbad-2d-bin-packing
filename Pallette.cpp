@@ -138,8 +138,8 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
 }
 
 void Pallette::updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIterator) {
-    if (bestItemTypeIterator->second == 1)
-        itemTypes.erase(bestItemTypeIterator);
+    if (bestItemTypeIterator->second == 1) //if there is single element to decrease count
+        itemTypes.erase(bestItemTypeIterator); //erase it
     else (bestItemTypeIterator->second)--;
 }
 
