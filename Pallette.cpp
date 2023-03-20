@@ -74,7 +74,7 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 
     if (topBorder > height)
         result.second = false;
-    else if (result.first) {
+    else if (result.first) { //item is legal to place
         InsertionTrialResult trialResult;
 
         auto topLeftCP = cpIterator;
@@ -105,7 +105,7 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
         std::vector<double> features = {};
         auto rating = network.rateItem(features);
 
-        if (rating > bestRating) {
+        if (rating > bestRating) { //if improve
             bestTrialResult = trialResult;
             bestRating = rating;
             bestItemTypeIterator = itemTypesIterator;
@@ -119,15 +119,16 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     auto topLeftCp = bestTrialResult.topLeftCp; //TODO think whether there is simpler approach
 
     if (topLeftCp == bottomRightCp) {
-        counterPoints.emplace(bottomRightCp, topLeftCp->first, bestTrialResult.topBorder);
+        counterPoints.emplace(bottomRightCp, topLeftCp->first, bestTrialResult.topBorder); //topleft == bottomright, so there is new topleft to add before bottomright
         bottomRightCp->first = bestTrialResult.rightBorder;
-        topLeftCp = std::prev(topLeftCp);
+        topLeftCp = std::prev(topLeftCp); //modify old topleft, so removal at the end of function works properly
     } else {
         bottomRightCp->first = bestTrialResult.rightBorder;
 
         topLeftCp->second = bestTrialResult.topBorder;
 
-        counterPoints.erase(std::next(topLeftCp), bottomRightCp); //remove unnecessary counterpoints - counterpoints in range [topleft + 1, bottomright)
+        counterPoints.erase(std::next(topLeftCp),
+                            bottomRightCp); //remove unnecessary counterpoints in range [topleft + 1, bottomright)
     }
 
     if (bottomRightCp->first == width) //remove last or first cp if there are placed on right border or top border
