@@ -130,7 +130,7 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
         counterPoints.erase(std::next(topLeftCp), bottomRightCp); //remove unnecessary counterpoints - counterpoints in range [topleft + 1, bottomright)
     }
 
-    if (bottomRightCp->first == width) //remove last or first cp if
+    if (bottomRightCp->first == width) //remove last or first cp if there are placed on right border or top border
         counterPoints.pop_back();
 
     if (topLeftCp->second == height)
