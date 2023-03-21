@@ -101,7 +101,7 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
         trialResult.topBorder = topBorder;
 
         // TODO calculate features
-        std::vector<double> features = {};
+        Features features = {};
         auto rating = network.rateItem(features);
 
         if (rating > bestRating) { //if improve
