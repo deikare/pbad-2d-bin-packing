@@ -1,6 +1,6 @@
 #include <iostream>
 #include "list"
-#include "Pallette.h"
+#include "Palette.h"
 
 std::string print_list(const std::list<int> &list) {
     std::string result = "[";
@@ -14,7 +14,7 @@ std::string print_list(const std::list<int> &list) {
 }
 
 void
-make_delete(std::list<int> &list, std::_List_iterator<int> first, std::_List_iterator<int> last,
+make_delete(std::list<int> &list, std::list<int>::iterator  first, std::list<int>::iterator last,
             const std::string &text) {
     std::cout << "Pre " + text + ": " + print_list(list) << std::endl;
     list.erase(first, last);
@@ -47,8 +47,8 @@ int main() {
     auto itemTypes = createItems();
     unsigned long width = 100;
     unsigned long height = 100;
-    std::vector<double> weights = {};
-    Pallette pallette(width, height, itemTypes, weights);
-    pallette.performSimulation();
+    std::vector<std::vector<double>> weights = {};
+    Palette palette(width, height, itemTypes, weights);
+    palette.performSimulation();
     return 0;
 }

@@ -3,4 +3,4 @@ project(pbad_2d_bin_packing)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(pbad_2d_bin_packing main.cpp Pallette.cpp Pallette.h NeuralNetwork.cpp NeuralNetwork.h)
+add_executable(pbad_2d_bin_packing main.cpp Palette.cpp Palette.h NeuralNetwork.cpp NeuralNetwork.h)

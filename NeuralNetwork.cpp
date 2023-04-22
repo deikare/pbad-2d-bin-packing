@@ -9,6 +9,6 @@ double NeuralNetwork::rateItem(const Features& features) const {
     return 1; //TODO
 }
 
-NeuralNetwork::NeuralNetwork(const std::vector<double> &weights) {
+NeuralNetwork::NeuralNetwork(const std::vector<std::vector<double>>& weights) {
 
 }

@@ -13,7 +13,7 @@ class NeuralNetwork {
 private:
     //TODO wojtek
 public:
-    explicit NeuralNetwork(const std::vector<double>& weights);
+    explicit NeuralNetwork(const std::vector<std::vector<double>>& weights);
 
     double rateItem(const Features& features) const; //trzeba będzie się zdecydować na jakiś wektor cech w argumencie
 

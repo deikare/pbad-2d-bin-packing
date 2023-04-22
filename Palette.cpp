@@ -2,18 +2,18 @@
 // Created by deikare on 12.03.23.
 //
 
-#include "Pallette.h"
+#include "Palette.h"
 
 #include <utility>
 
-Pallette::Pallette(const LengthUnit width, const LengthUnit height,
-                   const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
-                   const std::vector<double> &weights) : width(width), height(height), itemTypes(itemTypes),
+Palette::Palette(const LengthUnit width, const LengthUnit height,
+                 const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
+                 const std::vector<std::vector<double>> &weights) : width(width), height(height), itemTypes(itemTypes),
                                                          network(NeuralNetwork(weights)) {
     counterPoints.emplace_back(0, 0);
 }
 
-double Pallette::performSimulation() {
+double Palette::performSimulation() {
     double meanResult = 0.0;
     unsigned long insertsNumber = 0;
 
@@ -28,12 +28,12 @@ double Pallette::performSimulation() {
     return meanResult;
 }
 
-double Pallette::performInsertionStep() {
+double Palette::performInsertionStep() {
     double bestRating = -1;
 
     struct InsertionTrialResult bestTrialResult;
     auto cpBeg = counterPoints.begin();
-    std::_List_iterator<ItemTypeTuple> bestItemTypeIter;
+    std::list<ItemTypeTuple>::iterator bestItemTypeIter;
 
     auto itemTypesEnd = itemTypes.end();
     for (auto itemTypesIter = itemTypes.begin(); itemTypesIter != itemTypesEnd; itemTypesIter++) {
@@ -57,13 +57,13 @@ double Pallette::performInsertionStep() {
     return bestRating;
 }
 
-void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIterator,
-                                   const std::_List_iterator<CounterPoint> &beg,
-                                   const std::_List_iterator<CounterPoint> &end,
-                                   const std::_List_iterator<ItemTypeTuple> &itemTypesIterator,
-                                   const LengthUnit itemWidth, const LengthUnit itemHeight, double &bestRating,
-                                   Pallette::InsertionTrialResult &bestTrialResult,
-                                   std::_List_iterator<ItemTypeTuple> &bestItemTypeIterator) {
+void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIterator,
+                                  const std::list<CounterPoint>::iterator &beg,
+                                  const std::list<CounterPoint>::iterator &end,
+                                  const std::list<ItemTypeTuple>::iterator &itemTypesIterator,
+                                  const LengthUnit itemWidth, const LengthUnit itemHeight, double &bestRating,
+                                  Palette::InsertionTrialResult &bestTrialResult,
+                                  std::list<ItemTypeTuple>::iterator &bestItemTypeIterator) {
     std::pair<bool, bool> result = {true, true};
 
     LengthUnit topBorder = cpIterator->second + itemHeight;
@@ -113,7 +113,7 @@ void Pallette::tryInsertionForItem(const std::_List_iterator<CounterPoint> &cpIt
 }
 
 
-void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTrialResult) {
+void Palette::updateCounterPoints(const Palette::InsertionTrialResult &bestTrialResult) {
     auto bottomRightCp = bestTrialResult.bottomRightCp;
     auto topLeftCp = bestTrialResult.topLeftCp; //TODO think whether there is simpler approach
 
@@ -138,7 +138,7 @@ void Pallette::updateCounterPoints(const Pallette::InsertionTrialResult &bestTri
     else bottomRightCp->first = rightBorder;
 }
 
-void Pallette::updateItemList(const std::_List_iterator<ItemTypeTuple> &bestItemTypeIterator) {
+void Palette::updateItemList(const std::list<ItemTypeTuple>::iterator &bestItemTypeIterator) {
     if (bestItemTypeIterator->second == 1) //if there is single element to decrease count
         itemTypes.erase(bestItemTypeIterator); //erase it
     else (bestItemTypeIterator->second)--;
