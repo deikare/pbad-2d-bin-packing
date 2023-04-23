@@ -20,3 +20,13 @@
 
 itemki - lista, bo złożoność usuwania = O(1)
 cp - lista, bo złożoność emplace przed pozycją = O(1)
+
+## Cechy
+obowiązkowe
+* procent zmarnowanej powierzchni
+* procent całkowitej powierzchni zajętej
+
+opcjonalne:
+* procent powierzchni wolnego prawego górnego prostokąta
+* ile corner pointów
+* ile pozostało poszczególnych pudełek
