@@ -6,18 +6,22 @@
 #define PBAD_2D_BIN_PACKING_NEURALNETWORK_H
 
 #include "vector"
+#include <cmath>
 
 using Features = std::vector<double>;
 
-class NeuralNetwork {
-private:
-    //TODO wojtek
+class NeuralNetwork{
+
 public:
-    explicit NeuralNetwork(const std::vector<std::vector<double>>& weights);
+    NeuralNetwork(std::vector<std::vector<double>> weights);
 
-    double rateItem(const Features& features) const; //trzeba będzie się zdecydować na jakiś wektor cech w argumencie
+    double simulate(std::vector<double> inputs);
 
+private:
+    std::vector<std::vector<double>> weights;
+
+    std::vector<double> calc_inputs(std::vector<double> prev_outputs, std::vector<double> weights, int outputs_count);
+    std::vector<double> calc_outputs(std::vector<double> inputs);
 };
-
 
 #endif //PBAD_2D_BIN_PACKING_NEURALNETWORK_H
