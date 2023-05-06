@@ -30,3 +30,25 @@ opcjonalne:
 * procent powierzchni wolnego prawego górnego prostokąta
 * ile corner pointów
 * ile pozostało poszczególnych pudełek
+
+## Sieć neuronowa
+
+Wagi to 3-wymiarowy wektor, gdzie waga w(i,j,k): 
+- znajduje sie w i-tej warstwie
+- wychodzi z j-tego neuronu
+- wchodzi do k-tego neuronu
+
+Do każdej warstwy prócz pierwszej dodany jest bias. Jest to wektor wag dodany do każdej kolejnej warsty.
+
+Przykład sieci dla warstw o liczbie neuronów: 2/3/1:
+
+{
+  {{0.1, 0.2, 0.1},
+   {0.2, 0.3, 0.1},
+   {0.2, 0.3, 0.4}, // bias
+  },
+  {{0.1},
+   {0.8},
+   {0.2},
+   {0.3}} // bias
+};
