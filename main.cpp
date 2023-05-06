@@ -54,19 +54,19 @@ int main() {
 //    Palette palette(width, height, itemTypes, weights);
 //    palette.performSimulation();
 
-    std::vector<std::vector<double>> weights = {
-            { 0.5, 0.2, 0.13, 0.24, 0.6 },
-            { 0.2, 0.5, 0.73, 0.9 }
+    std::vector<std::vector<std::vector<float>>> weights = {
+            {{0.1, 0.2, 0.1},
+             {0.2, 0.3, 0.1},
+             {0.2, 0.3, 0.4},
+            },
+            {{0.1},
+             {0.8},
+             {0.2},
+             {0.3}}
     };
 //
     NeuralNetwork neuralNetwork(weights);
-    std::cout << neuralNetwork.simulate({1, 3, 1, 5, 2});
-
-//    for(int i; i < sizeof(neuralNetwork.get_output()); i++){
-//        std::cout << neuralNetwork.get_output()[i];
-//    }
-
-//    neuralNetwork.get_layer_at(2)->get_outputs();
+    std::cout << neuralNetwork.simulate({0.3, 0.9})[0];
 
     return 0;
 }

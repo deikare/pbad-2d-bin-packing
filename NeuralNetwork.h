@@ -7,21 +7,24 @@
 
 #include "vector"
 #include <cmath>
+#include <iostream>
 
 using Features = std::vector<double>;
 
 class NeuralNetwork{
 
 public:
-    NeuralNetwork(std::vector<std::vector<double>> weights);
+    NeuralNetwork(std::vector<std::vector<std::vector<float>>>);
 
-    double simulate(std::vector<double> inputs);
+    std::vector<float> simulate(std::vector<float> inputs);
 
 private:
-    std::vector<std::vector<double>> weights;
+    std::vector<std::vector<std::vector<float>>> weights;
 
-    std::vector<double> calc_inputs(std::vector<double> prev_outputs, std::vector<double> weights, int outputs_count);
-    std::vector<double> calc_outputs(std::vector<double> inputs);
+    float calculateSigm(float value);
+    float calculateNeuron(int layerIndex, int neuronIndex, std::vector<float> previousLayerNeurons);
+    int getLayerSize(int index);
+    int getLayersCount();
 };
 
 #endif //PBAD_2D_BIN_PACKING_NEURALNETWORK_H
