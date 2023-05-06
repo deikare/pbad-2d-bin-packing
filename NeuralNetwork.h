@@ -11,7 +11,7 @@
 
 using Features = std::vector<double>;
 
-class NeuralNetwork{
+class NeuralNetwork {
 
 public:
     NeuralNetwork(std::vector<std::vector<std::vector<float>>>);
@@ -22,8 +22,11 @@ private:
     std::vector<std::vector<std::vector<float>>> weights;
 
     float calculateSigm(float value);
+
     float calculateNeuron(int layerIndex, int neuronIndex, std::vector<float> previousLayerNeurons);
+
     int getLayerSize(int index);
+
     int getLayersCount();
 };
 
