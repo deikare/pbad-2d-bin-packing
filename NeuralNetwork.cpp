@@ -1,41 +1,56 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(std::vector<std::vector<double>> weights): weights(weights){}
+NeuralNetwork::NeuralNetwork(std::vector<std::vector<std::vector<float>>> weights): weights(weights){}
 
-double NeuralNetwork::simulate(std::vector<double> initial_inputs){
-    auto first_outputs = initial_inputs;
+std::vector<float> NeuralNetwork::simulate(std::vector<float> inputs){
+    int layersCount = getLayersCount();
+    std::vector<float> previousLayerNeurons = inputs;
+    std::vector<float> layerNeurons;
 
-    auto second_inputs = calc_inputs(first_outputs, weights[0], weights[1].size());
-    auto second_outputs = calc_outputs(second_inputs);
+    for(int layerIndex = 1; layerIndex < layersCount; layerIndex++){
+        int neuronsCount =  getLayerSize(layerIndex);
 
-    auto third_inputs = calc_inputs(second_outputs, weights[1], 1);
-    auto third_outputs = third_inputs;
+        for(int neuronIndex = 0;neuronIndex < neuronsCount; neuronIndex++){
+            float neuron = calculateNeuron(layerIndex, neuronIndex, previousLayerNeurons);
+            layerNeurons.push_back(neuron);
+        }
 
-    return third_inputs[0];
+        previousLayerNeurons = layerNeurons;
+    }
+
+    return layerNeurons;
 }
 
-std::vector<double> NeuralNetwork::calc_inputs(std::vector<double> prev_outputs, std::vector<double> weights, int outputs_count){
-    std::vector<double> inputs;
-    double temp_value = 0;
-
-    for (int output_index=0; output_index<outputs_count; output_index++) {
-        for(int prev_output_index=0; prev_output_index<prev_outputs.size(); prev_output_index ++)
-        {
-            temp_value += prev_outputs[prev_output_index]*weights[prev_output_index];
-        }
-        inputs.push_back(temp_value);
-    }
-    temp_value=0;
-
-    return inputs;
+float NeuralNetwork::calculateSigm(float value){
+    return 1 / (1 + exp(-value));
 };
 
-std::vector<double> NeuralNetwork::calc_outputs(std::vector<double> inputs){
-    std::vector<double> outputs;
+float NeuralNetwork::calculateNeuron(int layerIndex, int neuronIndex, std::vector<float> previousLayerNeurons) {
+    int previousLayerIndex = layerIndex - 1;
+    int previousLayerNeuronsCount = previousLayerNeurons.size();
+    float value = 0;
 
-    for(int i=0; i<inputs.size(); i++) {
-        outputs.push_back(1 / (1 + exp(-inputs[i])));
+    for(int previousLayerNeuronIndex = 0; previousLayerNeuronIndex < previousLayerNeuronsCount; previousLayerNeuronIndex++){
+        float weight = weights[previousLayerIndex][previousLayerNeuronIndex][neuronIndex];
+        float neuron = previousLayerNeurons[previousLayerNeuronIndex];
+
+        value += weight * neuron;
     }
 
-    return outputs;
+    // Add bias
+    value+= weights[previousLayerIndex][previousLayerNeuronsCount][neuronIndex];
+
+    return calculateSigm(value);
 };
+
+int NeuralNetwork::getLayerSize(int index) {
+    if(index == 0){
+        return weights[index].size() -1;
+    }
+
+    return weights[index - 1][0].size();
+}
+
+int NeuralNetwork::getLayersCount() {
+    return weights.size() + 1;
+}
