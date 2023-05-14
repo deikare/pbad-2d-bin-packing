@@ -9,7 +9,8 @@
 Palette::Palette(const LengthUnit width, const LengthUnit height,
                  const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
                  const std::vector<std::vector<double>> &weights, unsigned levelsNumber) : width(width), height(height),
-                                                                                           remainingArea(width * height),
+                                                                                           remainingArea(
+                                                                                                   width * height),
                                                                                            itemTypes(itemTypes),
                                                                                            network(NeuralNetwork(
                                                                                                    weights)),
@@ -64,6 +65,7 @@ double Palette::performInsertionStep() {
     if (bestRating >= 0) {
         updateCounterPoints(bestTrialResult);
         updateItemList(bestItemTypeIter);
+        remainingArea -= bestTrialResult.area;
     }
 
     return bestRating;
