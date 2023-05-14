@@ -9,7 +9,7 @@
 Palette::Palette(const LengthUnit width, const LengthUnit height,
                  const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
                  const std::vector<std::vector<double>> &weights, unsigned levelsNumber) : width(width), height(height),
-                                                                                           area(width * height),
+                                                                                           remainingArea(width * height),
                                                                                            itemTypes(itemTypes),
                                                                                            network(NeuralNetwork(
                                                                                                    weights)),
@@ -89,11 +89,21 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
     else if (result.first) { //item is legal to place
         InsertionTrialResult trialResult;
 
+        LengthUnit totalWastedWidth = 0;
+        LengthUnit totalWastedHeight = 0;
+        LengthUnit totalWastedArea = 0;
+
         auto topLeftCP = cpIterator;
         while (topLeftCP != beg) {
             auto prev = std::prev(topLeftCP);
             if (prev->second > topBorder)
                 break;
+
+            LengthUnit wastedWidth = topLeftCP->first - prev->first;
+            LengthUnit wastedHeight = topBorder - prev->second;
+            totalWastedWidth += wastedWidth;
+            totalWastedHeight += wastedHeight;
+            totalWastedArea += wastedWidth * wastedHeight;
 
             topLeftCP = prev;
         }
@@ -104,6 +114,12 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
             if (next == end || next->first > rightBorder)
                 break;
 
+            LengthUnit wastedWidth = rightBorder - next->first;
+            LengthUnit wastedHeight = bottomRightCP->second - next->second;
+            totalWastedWidth += wastedWidth;
+            totalWastedHeight += wastedHeight;
+            totalWastedArea += wastedWidth * wastedHeight;
+
             bottomRightCP = next;
         }
 
@@ -111,12 +127,17 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         trialResult.topLeftCp = topLeftCP;
         trialResult.rightBorder = rightBorder;
         trialResult.topBorder = topBorder;
+        LengthUnit itemArea = itemHeight * itemWidth;
+        trialResult.area = itemArea;
 
         // TODO calculate features
         Features features = {
                 (float) itemWidth / (float) width,
                 (float) itemHeight / (float) height,
-                float(itemWidth) * float(itemHeight) / float(area)
+                float(itemArea) / float(remainingArea),
+                float(totalWastedWidth) / float(width),
+                float(totalWastedHeight) / float(height),
+                float(totalWastedArea) / float(remainingArea)
         };
 
         std::vector<float> levels(levelsNumber, 0.0f);
@@ -174,7 +195,7 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         for (auto i = itemTypes.size(); i < itemTypesNumberLimit; i++)  //complete missing itemTypes to always same size
             features.emplace_back(0.0f);
 
-        LengthUnit remainingHeight = height - topBorder; //how much space is wasted
+        LengthUnit remainingHeight = height - topBorder; //how much space is wasted if same type would be inserted
         features.emplace_back(float(remainingHeight % itemHeight) / float(remainingHeight));
 
         LengthUnit remainingWidth = width - rightBorder;
@@ -185,7 +206,7 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
 
         auto rating = network.simulate(features);
 
-        if (rating > bestRating) { //if improve
+        if (rating[0] > bestRating) { //if improve
             bestTrialResult = trialResult;
             bestRating = rating;
             bestItemTypeIterator = itemTypesIterator;

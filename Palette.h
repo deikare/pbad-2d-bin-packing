@@ -18,7 +18,7 @@ class Palette {
 private:
     const LengthUnit width;
     const LengthUnit height;
-    const LengthUnit area;
+    LengthUnit remainingArea;
 
     const unsigned levelsNumber;
     const float levelIncrement;
@@ -39,6 +39,7 @@ private:
         std::list<CounterPoint>::iterator bottomRightCp;
         LengthUnit rightBorder{};
         LengthUnit topBorder{};
+        LengthUnit area{};
     };
 
     void tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIterator,
