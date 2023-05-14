@@ -9,7 +9,7 @@
 #include <cmath>
 #include <iostream>
 
-using Features = std::vector<double>;
+using Features = std::vector<float>;
 
 class NeuralNetwork {
 

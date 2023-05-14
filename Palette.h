@@ -18,6 +18,14 @@ class Palette {
 private:
     const LengthUnit width;
     const LengthUnit height;
+    const LengthUnit area;
+
+    const unsigned levelsNumber;
+    const float levelIncrement;
+
+    unsigned long itemsNumber;
+
+    static const unsigned itemTypesNumberLimit = 20;
 
     std::list<CounterPoint> counterPoints;
     std::list<ItemTypeTuple> itemTypes; //pair of pairs is faster than tuple, see https://stackoverflow.com/questions/6687107/difference-between-stdpair-and-stdtuple-with-only-two-members
@@ -48,7 +56,7 @@ private:
 public:
     Palette(LengthUnit width, LengthUnit height,
             const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
-            const std::vector<std::vector<double>> &weights);
+            const std::vector<std::vector<double>> &weights, unsigned levelsNumber);
 
     double performSimulation();
 };

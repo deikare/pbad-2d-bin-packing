@@ -8,9 +8,21 @@
 
 Palette::Palette(const LengthUnit width, const LengthUnit height,
                  const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
-                 const std::vector<std::vector<double>> &weights) : width(width), height(height), itemTypes(itemTypes),
-                                                         network(NeuralNetwork(weights)) {
+                 const std::vector<std::vector<double>> &weights, unsigned levelsNumber) : width(width), height(height),
+                                                                                           area(width * height),
+                                                                                           itemTypes(itemTypes),
+                                                                                           network(NeuralNetwork(
+                                                                                                   weights)),
+                                                                                           levelsNumber(levelsNumber),
+                                                                                           levelIncrement(
+                                                                                                   float(height) /
+                                                                                                   float(levelsNumber +
+                                                                                                         1)) {
     counterPoints.emplace_back(0, 0);
+    itemsNumber = 0;
+    for (auto &itemType: itemTypes) {
+        itemsNumber += itemType.second;
+    }
 }
 
 double Palette::performSimulation() {
@@ -101,8 +113,77 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         trialResult.topBorder = topBorder;
 
         // TODO calculate features
-        Features features = {};
-        auto rating = network.rateItem(features);
+        Features features = {
+                (float) itemWidth / (float) width,
+                (float) itemHeight / (float) height,
+                float(itemWidth) * float(itemHeight) / float(area)
+        };
+
+        std::vector<float> levels(levelsNumber, 0.0f);
+        unsigned topLeftLevelIndex = std::ceil(float(topLeftCP->second) / levelIncrement - 1.0f); //levels
+        unsigned bottomRightLevelIndex = std::floor(float(bottomRightCP->second) / levelIncrement - 1.0f);
+
+        auto tmpIterator = std::prev(end);
+        if (tmpIterator == bottomRightCP) {
+            for (int i = 0; i < bottomRightLevelIndex; i++)
+                features.emplace_back(1.0f);
+        } else {
+            float level = levelIncrement;
+            auto prev = std::prev(tmpIterator); //add flag
+            for (int i = 0; i < bottomRightLevelIndex; i++, level += levelIncrement) {
+                while (prev->second < level && prev != bottomRightCP) {
+                    tmpIterator = prev;
+                    prev = std::prev(prev);
+                }
+                features.emplace_back(float(tmpIterator->first) / float(width));
+            }
+        }
+
+        for (int i = bottomRightLevelIndex; i <= topLeftLevelIndex; ++i)
+            features.emplace_back(float(rightBorder) / float(width));
+
+
+        if (topLeftCP == beg) {
+            for (int i = topLeftLevelIndex + 1; i < levelsNumber; i++)
+                features.emplace_back(0.0f);
+        } else {
+            tmpIterator = std::prev(topLeftCP);
+            auto prev = std::prev(tmpIterator);
+            float level = (topLeftLevelIndex + 2) * levelIncrement;
+            for (int i = topLeftLevelIndex + 1; i < levelsNumber; i++, level += levelIncrement) {
+                while (tmpIterator != beg && prev->second < level) {
+                    tmpIterator = prev;
+                    prev = std::prev(prev);
+                }
+                features.emplace_back(float(tmpIterator->first) / float(width));
+            }
+        }
+
+        features.emplace_back(
+                float(std::distance(topLeftCP, bottomRightCP) + 1) / float(counterPoints.size())); //used cps amount
+
+        for (auto it = itemTypes.begin(); it != itemTypesIterator; it++) //how many items yet to place
+            features.emplace_back(float(it->second) / float(itemsNumber));
+
+        features.emplace_back(float(itemTypesIterator->second - 1) / float(itemsNumber));
+
+        auto itemTypesEnd = itemTypes.end();
+        for (auto it = itemTypesIterator; it != itemTypesEnd; it++)
+            features.emplace_back(float(it->second) / float(itemsNumber));
+
+        for (auto i = itemTypes.size(); i < itemTypesNumberLimit; i++)  //complete missing itemTypes to always same size
+            features.emplace_back(0.0f);
+
+        LengthUnit remainingHeight = height - topBorder; //how much space is wasted
+        features.emplace_back(float(remainingHeight % itemHeight) / float(remainingHeight));
+
+        LengthUnit remainingWidth = width - rightBorder;
+        features.emplace_back(float(remainingWidth % itemWidth) / float(remainingWidth));
+
+        features.emplace_back(rightBorder == width ? 1.0f : 0.0f); //whether the edges match
+        features.emplace_back(topBorder == height ? 1.0f : 0.0f);
+
+        auto rating = network.simulate(features);
 
         if (rating > bestRating) { //if improve
             bestTrialResult = trialResult;
@@ -142,6 +223,7 @@ void Palette::updateItemList(const std::list<ItemTypeTuple>::iterator &bestItemT
     if (bestItemTypeIterator->second == 1) //if there is single element to decrease count
         itemTypes.erase(bestItemTypeIterator); //erase it
     else (bestItemTypeIterator->second)--;
+    itemsNumber--;
 }
 
 
