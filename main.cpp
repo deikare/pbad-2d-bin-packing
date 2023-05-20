@@ -1,7 +1,9 @@
 #include <iostream>
 #include "list"
 //#include "Palette.h"
-#include "NeuralNetwork.h"
+//#include "NeuralNetwork.h"
+#include "include/libcmaes/cmaes.h"
+//#include "include/libcmaes/esostrategy.h"
 
 //std::string print_list(const std::list<int> &list) {
 //    std::string result = "[";
@@ -44,7 +46,15 @@
 //    return result;
 //}
 
+using namespace libcmaes;
 
+FitFunc fsphere = [](const double *x, const int N)
+{
+    double val = 0.0;
+    for (int i=0;i<N;i++)
+        val += x[i]*x[i];
+    return val;
+};
 
 int main() {
 //    auto itemTypes = createItems();
@@ -54,19 +64,30 @@ int main() {
 //    Palette palette(width, height, itemTypes, weights);
 //    palette.performSimulation();
 
-    std::vector<std::vector<std::vector<float>>> weights = {
-            {{0.1, 0.2, 0.1},
-             {0.2, 0.3, 0.1},
-             {0.2, 0.3, 0.4},
-            },
-            {{0.1},
-             {0.8},
-             {0.2},
-             {0.3}}
-    };
-//
-    NeuralNetwork neuralNetwork(weights);
-    std::cout << neuralNetwork.simulate({0.3, 0.9})[0];
+//    std::vector<std::vector<std::vector<float>>> weights = {
+//            {{0.1, 0.2, 0.1},
+//             {0.2, 0.3, 0.1},
+//             {0.2, 0.3, 0.4},
+//            },
+//            {{0.1},
+//             {0.8},
+//             {0.2},
+//             {0.3}}
+//    };
+////
+//    NeuralNetwork neuralNetwork(weights);
+//    std::cout << neuralNetwork.simulate({0.3, 0.9})[0];
+
+    int dim = 10; // problem dimensions.
+    std::vector<double> x0(dim,10.0);
+    double sigma = 0.1;
+    //int lambda = 100; // offsprings at each generation.
+    CMAParameters<> cmaparams(x0,sigma);
+    //cmaparams.set_algo(BIPOP_CMAES);
+    CMASolutions cmasols = cmaes<>(fsphere,cmaparams);
+    std::cout << "best solution: " << cmasols << std::endl;
+    std::cout << "optimization took " << cmasols.elapsed_time() / 1000.0 << " seconds\n";
+    return cmasols.run_status();
 
     return 0;
 }

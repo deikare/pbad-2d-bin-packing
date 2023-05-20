@@ -52,3 +52,7 @@ Przykład sieci dla warstw o liczbie neuronów: 2/3/1:
    {0.2},
    {0.3}} // bias
 };
+
+## Integracja z libcmaes
+* wykonać instrukcje z [wiki](https://github.com/CMA-ES/libcmaes/wiki) - opcjonalne, jeśli pliki z inc oraz lib nie są jeszcze dodane 
+* sprawdzić, gdzie znajduje się paczka `eigen3` poleceniem `dpkg -S libeigen3-dev`
