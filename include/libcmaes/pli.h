@@ -22,7 +22,7 @@
 #ifndef PLI_H
 #define PLI_H
 
-#include <libcmaes/eo_matrix.h>
+#include "eo_matrix.h"
 #include <vector>
 
 namespace libcmaes

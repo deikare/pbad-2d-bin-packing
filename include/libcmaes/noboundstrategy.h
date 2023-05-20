@@ -22,7 +22,7 @@
 #ifndef NOBOUNDSTRATEGY_H
 #define NOBOUNDSTRATEGY_H
 
-#include <libcmaes/eo_matrix.h>
+#include "eo_matrix.h"
 #include <vector>
 #include <limits>
 

@@ -22,8 +22,8 @@
 #ifndef CANDIDATE_H
 #define CANDIDATE_H
 
-#include <libcmaes/eo_matrix.h>
-#include <libcmaes/cmaparameters.h>
+#include "eo_matrix.h"
+#include "cmaparameters.h"
 
 namespace libcmaes
 {

@@ -29,7 +29,7 @@
 #ifndef RANKINGSVM_H
 #define RANKINGSVM_H
 
-#include <libcmaes/eo_matrix.h>
+#include "../eo_matrix.h"
 #include <vector>
 #include <limits>
 #include <cstdlib>

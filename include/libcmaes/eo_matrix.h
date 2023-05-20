@@ -23,13 +23,14 @@
 #define EO_MATRIX_H
 
 #include <algorithm>
-#include <Eigen/Dense>
+#include "eigen3/Eigen/Dense"
 #include <stdlib.h>
 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> dMat; // declares a column-major non-sparse matrix type of double
 typedef Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> dVec; // declares a vector of double.
 
-#include <unsupported/Eigen/MatrixFunctions>
+#include "eigen3/unsupported/Eigen/MatrixFunctions"
+//#include <unsupported/Eigen/MatrixFunctions>
 
 inline void removeRow(dMat& matrix, unsigned int rowToRemove)
 {

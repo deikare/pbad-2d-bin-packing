@@ -24,9 +24,9 @@
 
 #include <functional>
 #include <chrono>
-#include <libcmaes/parameters.h>
-#include <libcmaes/esostrategy.h>
-#include <libcmaes/cmasolutions.h>
+#include "parameters.h"
+#include "esostrategy.h"
+#include "cmasolutions.h"
 
 /* algorithms */
 enum {

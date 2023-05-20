@@ -22,7 +22,7 @@
 #ifndef IPOPCMASTRATEGY_H
 #define IPOPCMASTRATEGY_H
 
-#include <libcmaes/cmastrategy.h>
+#include "cmastrategy.h"
 
 namespace libcmaes
 {

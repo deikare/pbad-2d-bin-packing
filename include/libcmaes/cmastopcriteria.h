@@ -22,7 +22,7 @@
 #ifndef CMASTOPCRITERIA_H
 #define CMASTOPCRITERIA_H
 
-#include <libcmaes/cmaparameters.h>
+#include "cmaparameters.h"
 #include <functional>
 #include <map>
 

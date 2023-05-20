@@ -19,10 +19,10 @@
  * along with libcmaes.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libcmaes/cmaes.h>
-#include <libcmaes/surrogatestrategy.h>
-#include <libcmaes/opti_err.h>
-#include <libcmaes/surrogates/rankingsvm.hpp>
+#include "../cmaes.h"
+#include "../surrogatestrategy.h"
+#include "../opti_err.h"
+#include "rankingsvm.hpp"
 
 #ifndef RSVMSURROGATESTRATEGY_H
 #define RSVMSURROGATESTRATEGY_H
