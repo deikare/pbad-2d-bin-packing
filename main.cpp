@@ -2,6 +2,7 @@
 #include "list"
 //#include "Palette.h"
 #include "NeuralNetwork.h"
+#include "Generator.h"
 
 //std::string print_list(const std::list<int> &list) {
 //    std::string result = "[";
@@ -54,19 +55,36 @@ int main() {
 //    Palette palette(width, height, itemTypes, weights);
 //    palette.performSimulation();
 
-    std::vector<std::vector<std::vector<float>>> weights = {
-            {{0.1, 0.2, 0.1},
-             {0.2, 0.3, 0.1},
-             {0.2, 0.3, 0.4},
-            },
-            {{0.1},
-             {0.8},
-             {0.2},
-             {0.3}}
-    };
-//
-    NeuralNetwork neuralNetwork(weights);
-    std::cout << neuralNetwork.simulate({0.3, 0.9})[0];
+//    std::vector<std::vector<std::vector<float>>> weights = {
+//            {{0.1, 0.2, 0.1},
+//             {0.2, 0.3, 0.1},
+//             {0.2, 0.3, 0.4},
+//            },
+//            {{0.1},
+//             {0.8},
+//             {0.2},
+//             {0.3}}
+//    };
+////
+//    NeuralNetwork neuralNetwork(weights);
+//    std::cout << neuralNetwork.simulate({0.3, 0.9})[0];
+
+    int min_length = 3;
+    int max_length = 12;
+    int min_count = 3;
+    int max_count = 5;
+    int items_type_count = 8;
+    double difficulty = 0.2;
+
+    Generator generator(min_length, max_length, min_count, max_count, items_type_count, difficulty);
+    generator.generate();
+
+    auto items = generator.getItems();
+    auto palette_size = generator.getPaletteSize();
+
+    std::cout << palette_size.first;
+    std::cout << "\n";
+    std::cout << palette_size.second;
 
     return 0;
 }
