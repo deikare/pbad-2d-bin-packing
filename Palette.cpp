@@ -8,17 +8,21 @@
 
 Palette::Palette(const LengthUnit width, const LengthUnit height,
                  const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
-                 const std::vector<std::vector<double>> &weights, unsigned levelsNumber) : width(width), height(height),
-                                                                                           remainingArea(
-                                                                                                   width * height),
-                                                                                           itemTypes(itemTypes),
-                                                                                           network(NeuralNetwork(
-                                                                                                   weights)),
-                                                                                           levelsNumber(levelsNumber),
-                                                                                           levelIncrement(
-                                                                                                   float(height) /
-                                                                                                   float(levelsNumber +
-                                                                                                         1)) {
+                 const std::vector<std::vector<std::vector<float>>> &weights, unsigned levelsNumber) : width(width),
+                                                                                                       height(height),
+                                                                                                       remainingArea(
+                                                                                                               width *
+                                                                                                               height),
+                                                                                                       itemTypes(
+                                                                                                               itemTypes),
+                                                                                                       network(NeuralNetwork(
+                                                                                                               weights)),
+                                                                                                       levelsNumber(
+                                                                                                               levelsNumber),
+                                                                                                       levelIncrement(
+                                                                                                               float(height) /
+                                                                                                               float(levelsNumber +
+                                                                                                                     1)) {
     counterPoints.emplace_back(0, 0);
     itemsNumber = 0;
     for (auto &itemType: itemTypes) {
@@ -142,9 +146,18 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
                 float(totalWastedArea) / float(remainingArea)
         };
 
+        auto tmp = double(bottomRightCP->second) / levelIncrement;
+        tmp = tmp - 1.0;
         std::vector<float> levels(levelsNumber, 0.0f);
-        unsigned topLeftLevelIndex = std::ceil(float(topLeftCP->second) / levelIncrement - 1.0f); //levels
-        unsigned bottomRightLevelIndex = std::floor(float(bottomRightCP->second) / levelIncrement - 1.0f);
+        //todo error here - consider types or different means of calculating indices
+        int topLeftLevelIndex, bottomRightLevelIndex;
+        if (topLeftCP == bottomRightCP) {
+            topLeftLevelIndex = std::floor(double(topBorder) / levelIncrement); //levels
+            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
+        } else {
+            topLeftLevelIndex = std::floor(double(topLeftCP->second) / levelIncrement - 1.0); //levels
+            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
+        }
 
         auto tmpIterator = std::prev(end);
         if (tmpIterator == bottomRightCP) {
@@ -206,11 +219,12 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         features.emplace_back(rightBorder == width ? 1.0f : 0.0f); //whether the edges match
         features.emplace_back(topBorder == height ? 1.0f : 0.0f);
 
-        auto rating = network.simulate(features);
+//        auto rating = network.simulate(features);
+        std::vector<float> rating = {12};
 
         if (rating[0] > bestRating) { //if improve
             bestTrialResult = trialResult;
-            bestRating = rating;
+            bestRating = rating[0];
             bestItemTypeIterator = itemTypesIterator;
         }
     }

@@ -30,7 +30,7 @@ private:
     std::list<CounterPoint> counterPoints;
     std::list<ItemTypeTuple> itemTypes; //pair of pairs is faster than tuple, see https://stackoverflow.com/questions/6687107/difference-between-stdpair-and-stdtuple-with-only-two-members
 
-    const NeuralNetwork network;
+    NeuralNetwork network;
 
     double performInsertionStep();
 
@@ -57,7 +57,7 @@ private:
 public:
     Palette(LengthUnit width, LengthUnit height,
             const std::list<std::pair<ItemType, unsigned long>> &itemTypes,
-            const std::vector<std::vector<double>> &weights, unsigned levelsNumber);
+            const std::vector<std::vector<std::vector<float>>> &weights, unsigned levelsNumber);
 
     double performSimulation();
 };
