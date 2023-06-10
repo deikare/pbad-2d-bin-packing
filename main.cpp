@@ -63,7 +63,7 @@ int main() {
                     {0.3}}
     };
 
-    Palette palette(width, height, itemTypes, weights, 19);
+    Palette palette(width, height, itemTypes, weights, 101);
     palette.performSimulation();
 
 
