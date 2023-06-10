@@ -21,7 +21,7 @@ private:
     LengthUnit remainingArea;
 
     const unsigned levelsNumber;
-    const float levelIncrement;
+    const LengthUnit levelIncrement;
 
     unsigned long itemsNumber;
 

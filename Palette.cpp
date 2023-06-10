@@ -21,8 +21,7 @@ Palette::Palette(const LengthUnit width, const LengthUnit height,
                                                                                                                levelsNumber),
                                                                                                        levelIncrement(
                                                                                                                float(height) /
-                                                                                                               float(levelsNumber +
-                                                                                                                     1)) {
+                                                                                                               float(levelsNumber - 1)) {
     counterPoints.emplace_back(0, 0);
     itemsNumber = 0;
     for (auto &itemType: itemTypes) {
@@ -64,6 +63,7 @@ double Palette::performInsertionStep() {
 //                                itemTypesIter->first.first, bestRating,
 //                                bestTrialResult, bestItemTypeIter);
         }
+//        break; //todo REMOVE HERE!!!
     }
 
     if (bestRating >= 0) {
@@ -137,35 +137,65 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         trialResult.area = itemArea;
 
         // TODO calculate features
-        Features features = {
-                (float) itemWidth / (float) width,
-                (float) itemHeight / (float) height,
-                float(itemArea) / float(remainingArea),
-                float(totalWastedWidth) / float(width),
-                float(totalWastedHeight) / float(height),
-                float(totalWastedArea) / float(remainingArea)
-        };
+//        Features features = {
+//                (float) itemWidth / (float) width,
+//                (float) itemHeight / (float) height,
+//                float(itemArea) / float(remainingArea),
+//                float(totalWastedWidth) / float(width),
+//                float(totalWastedHeight) / float(height),
+//                float(totalWastedArea) / float(remainingArea)
+//        };
+        Features features{};
 
-        auto tmp = double(bottomRightCP->second) / levelIncrement;
-        tmp = tmp - 1.0;
         std::vector<float> levels(levelsNumber, 0.0f);
         //todo error here - consider types or different means of calculating indices
         int topLeftLevelIndex, bottomRightLevelIndex;
+        LengthUnit lowerBound, upperBound;
         if (topLeftCP == bottomRightCP) {
-            topLeftLevelIndex = std::floor(double(topBorder) / levelIncrement); //levels
-            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
+            lowerBound = bottomRightCP->second;
+            upperBound = topBorder;
+//            topLeftLevelIndex = std::floor(double(topBorder) / levelIncrement); //levels
+//            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
         } else {
-            topLeftLevelIndex = std::floor(double(topLeftCP->second) / levelIncrement - 1.0); //levels
-            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
+            lowerBound = bottomRightCP->second;
+            upperBound = topLeftCP->second;
+//            upperBound = std::max(topBorder, topLeftCP->second);
+//            topLeftLevelIndex = std::floor(double(topLeftCP->second) / levelIncrement - 1.0); //levels
+//            bottomRightLevelIndex = std::ceil(double(bottomRightCP->second) / levelIncrement - 1.0);
         }
+
+        int index = 0;
+        LengthUnit level = 0;
+        while (level < lowerBound) {
+            index++;
+            level += levelIncrement;
+        }
+        if (lowerBound % levelIncrement == 0)
+            bottomRightLevelIndex = index + 1;
+        else bottomRightLevelIndex = index;
+
+
+        while (level <= upperBound) {
+            index++;
+            level += levelIncrement;
+        }
+
+        topLeftLevelIndex = index - 1;
+
+        //póki poziom poniżej ostatniego, to wstawiam jedynkę
+        //pomiędzy końcem a bottomrightem wstawiam x najbliższego cp
+        //pomiędzy bottomright i topleft wstawiam rightbordery
+        //od topleft do beg wstawiam najbliższy cp
+        //powyżej beg wstawiam x bega
 
         auto tmpIterator = std::prev(end);
         if (tmpIterator == bottomRightCP) {
+//            float value = float(bottomRightCP->first) / float(width);
             for (int i = 0; i < bottomRightLevelIndex; i++)
                 features.emplace_back(1.0f);
         } else {
-            float level = levelIncrement;
-            auto prev = std::prev(tmpIterator); //add flag
+            level = levelIncrement;
+            auto prev = std::prev(tmpIterator);
             for (int i = 0; i < bottomRightLevelIndex; i++, level += levelIncrement) {
                 while (prev->second < level && prev != bottomRightCP) {
                     tmpIterator = prev;
@@ -179,14 +209,16 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
             features.emplace_back(float(rightBorder) / float(width));
 
 
+        topLeftLevelIndex++;
         if (topLeftCP == beg) {
-            for (int i = topLeftLevelIndex + 1; i < levelsNumber; i++)
-                features.emplace_back(0.0f);
+            float value = float(beg->first) / float(width);
+            for (int i = topLeftLevelIndex; i < levelsNumber; i++)
+                features.emplace_back(value);
         } else {
             tmpIterator = std::prev(topLeftCP);
             auto prev = std::prev(tmpIterator);
-            float level = (topLeftLevelIndex + 2) * levelIncrement;
-            for (int i = topLeftLevelIndex + 1; i < levelsNumber; i++, level += levelIncrement) {
+            level = topLeftLevelIndex * levelIncrement;
+            for (int i = topLeftLevelIndex; i < levelsNumber; i++, level += levelIncrement) {
                 while (tmpIterator != beg && prev->second < level) {
                     tmpIterator = prev;
                     prev = std::prev(prev);
@@ -220,7 +252,7 @@ void Palette::tryInsertionForItem(const std::list<CounterPoint>::iterator &cpIte
         features.emplace_back(topBorder == height ? 1.0f : 0.0f);
 
 //        auto rating = network.simulate(features);
-        std::vector<float> rating = {12};
+        std::vector<float> rating = {1};
 
         if (rating[0] > bestRating) { //if improve
             bestTrialResult = trialResult;

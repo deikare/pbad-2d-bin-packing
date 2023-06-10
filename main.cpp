@@ -36,7 +36,7 @@ std::list<ItemTypeTuple> createItems() {
             {{2, 25}, 1},
             {{7, 25}, 1},
             {{40, 90}, 1},
-            {{150, 150}, 1},
+//            {{150, 150}, 1},
             {{20, 10}, 1},
             {{40, 5}, 1},
             {{50, 3}, 1},
@@ -63,7 +63,7 @@ int main() {
                     {0.3}}
     };
 
-    Palette palette(width, height, itemTypes, weights, 9);
+    Palette palette(width, height, itemTypes, weights, 19);
     palette.performSimulation();
 
 
