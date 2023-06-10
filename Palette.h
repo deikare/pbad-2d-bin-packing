@@ -20,7 +20,6 @@ private:
     const LengthUnit height;
     LengthUnit remainingArea;
 
-    const unsigned levelsNumber;
     const LengthUnit levelIncrement;
 
     unsigned long itemsNumber;
