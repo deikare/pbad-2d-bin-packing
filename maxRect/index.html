@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Canvas Rectangles</title>
+  <script src="index.js"></script>
+</head>
+<body>
+  <canvas id="myCanvas" width="1000" height="1000"></canvas>
+
+  <script>
+    const bins = bins;
+    const canvas = document.getElementById('myCanvas');
+
+    // Get the 2D rendering context
+    const context = canvas.getContext('2d');
+
+    // Get the canvas element
+    bins.forEach((bin, index) => {
+        bin.rects.forEach(rect => {
+            context.fillRect(rect.x, rect.y, rect.width, rect.height);
+            context.fillStyle = 'blue';
+        })});
+
+    // Set the fill color for the rectangles
+    context.fillStyle = 'blue';
+
+    // Draw the first rectangle
+
+
+    // Set a different fill color
+    context.fillStyle = 'red';
+
+    // Draw the second rectangle
+    context.fillRect(200, 100, 150, 80);
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+lockfileVersion: 5.4
+
+specifiers:
+  maxrects-packer: ^2.7.3
+
+dependencies:
+  maxrects-packer: 2.7.3
+
+packages:
+
+  /maxrects-packer/2.7.3:
+    resolution: {integrity: sha512-bG6qXujJ1QgttZVIH4WDanhoJtvbud/xP/XPyf6A69C9RdA61BM4TomFALCq2nrTa+tARRIBB4LuIFsnUQU2wA==}
+    dev: false
